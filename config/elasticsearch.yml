@@ -1,0 +1,337 @@
+# ======================== Elasticsearch Configuration =========================
+#
+# NOTE: Elasticsearch comes with reasonable defaults for most settings.
+#       Before you set out to tweak and tune the configuration, make sure you
+#       understand what are you trying to accomplish and the consequences.
+#
+# The primary way of configuring a node is via this file. This template lists
+# the most important settings you may want to configure for a production cluster.
+#
+# Please see the documentation for further information on configuration options:
+# <http://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration.html>
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+#
+cluster.name: dispider
+# cluster.name可以确定你的集群名称,当你的elasticsearch集群在同一个网段中elasticsearch会自动的找到具有相同cluster.name的elasticsearch服务.
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+# 可自动生成也可手动配置.
+# node.name: node-1
+#
+# Add custom attributes to the node:
+#
+# node.rack: r1
+#
+# 允许一个节点是否可以成为一个master节点,es是默认集群中的第一台机器为master,如果这台机器停止就会重新选举master.
+node.master: true
+# 允许该节点存储数据(默认开启) 
+node.data: true
+
+# 配置文件中给出了三种配置高性能集群拓扑结构的模式,如下： 
+# 1. 如果你想让节点从不选举为主节点,只用来存储数据,可作为负载器 
+# node.master: false 
+# node.data: true
+
+# 2. 如果想让节点成为主节点,且不存储任何数据,并保有空闲资源,可作为协调器 
+# node.master: true
+# node.data: false 
+
+# 3. 如果想让节点既不称为主节点,又不成为数据节点,那么可将他作为搜索器,从节点中获取数据,生成搜索结果等 
+# node.master: false 
+# node.data: false 
+
+
+#################################### Index #################################### 
+# 设置索引的分片数,默认为5 
+#index.number_of_shards: 5 
+# 设置索引的副本数,默认为1: 
+#index.number_of_replicas: 1 
+# 配置文件中提到的最佳实践是,如果服务器够多,可以将分片提高,尽量将数据平均分布到大集群中去 
+# 同时,如果增加副本数量可以有效的提高搜索性能 
+# 需要注意的是,"number_of_shards" 是索引创建后一次生成的,后续不可更改设置 
+# "number_of_replicas" 是可以通过API去实时修改设置的
+
+
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+#
+# path.data: /path/to/data
+# 多个数据存储位置,有利于性能提升
+# path.data: /path/to/data1,/path/to/data2
+#
+# Path to log files:
+#
+# path.logs: /path/to/logs
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+#
+# bootstrap.mlockall: true
+#
+# Make sure that the `ES_HEAP_SIZE` environment variable is set to about half the memory
+# available on the system and that the owner of the process is allowed to use this limit.
+#
+# Elasticsearch performs poorly when the system is swapping the memory.
+#
+# ---------------------------------- Network -----------------------------------
+#
+# Set the bind address to a specific IP (IPv4 or IPv6):
+# 设置绑定的ip地址,可以是ipv4或ipv6的,默认为0.0.0.0
+# network.bind_host: 192.168.0.1
+# 设置其它节点和该节点交互的ip地址,如果不设置它会自动设置,值必须是个真实的ip地址
+# network.publish_host: 192.168.0.1
+
+# 同时设置bind_host和publish_host上面两个参数
+network.host: 0.0.0.0
+#
+# 设置节点间交互的tcp端口,默认是9300 
+# transport.tcp.port: 9300 
+
+# 设置是否压缩tcp传输时的数据，默认为false,不压缩 
+# transport.tcp.compress: true 
+
+# 设置对外服务的http端口,默认为9200 
+# http.port: 9200 
+
+# 设置请求内容的最大容量,默认100mb 
+# http.max_content_length: 100mb 
+
+# 使用http协议对外提供服务,默认为true,开启 
+# http.enabled: false
+
+#
+# For more information, see the documentation at:
+# <http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html>
+#
+# --------------------------------- Discovery ----------------------------------
+#
+# Pass an initial list of hosts to perform discovery when new node is started:
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+#
+# discovery.zen.ping.unicast.hosts: ["host1", "host2"]
+#
+# Prevent the "split brain" by configuring the majority of nodes (total number of nodes / 2 + 1):
+#
+# discovery.zen.minimum_master_nodes: 3
+#
+# For more information, see the documentation at:
+# <http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery.html>
+#
+# ---------------------------------- Gateway -----------------------------------
+#
+# Block initial recovery after a full cluster restart until N nodes are started:
+#
+# gateway.recover_after_nodes: 3
+#
+# For more information, see the documentation at:
+# <http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-gateway.html>
+#
+# ---------------------------------- Various -----------------------------------
+#
+# Disable starting multiple nodes on a single system:
+#
+# node.max_local_storage_nodes: 1
+#
+# Require explicit names when deleting indices:
+#
+# action.destructive_requires_name: true
+index:
+  analysis:
+    tokenizer:
+      my_pinyin:
+        type: pinyin
+        first_letter: prefix
+        padding_char: ''
+      pinyin_first_letter:
+        type: pinyin
+        first_letter: only
+      mmseg_maxword:
+        type: mmseg
+        seg_type: max_word
+      mmseg_complex:
+        type: mmseg
+        seg_type: complex
+      mmseg_simple:
+        type: mmseg
+        seg_type: simple
+      semicolon_spliter:
+        type: pattern
+        pattern: ";"
+      pct_spliter:
+        type: pattern
+        pattern: "[%]+"
+      ngram_1_to_2:
+        type: nGram
+        min_gram: 1
+        max_gram: 2
+      ngram_1_to_3:
+        type: nGram
+        min_gram: 1
+        max_gram: 3
+    filter:
+      ngram_min_3:
+        max_gram: 10
+        min_gram: 3
+        type: nGram
+      ngram_min_2:
+        max_gram: 10
+        min_gram: 2
+        type: nGram
+      ngram_min_1:
+        max_gram: 10
+        min_gram: 1
+        type: nGram
+      min2_length:
+        min: 2
+        max: 4
+        type: length
+      min3_length:
+        min: 3
+        max: 4
+        type: length
+      pinyin_first_letter:
+        type: pinyin
+        first_letter: only
+    analyzer:
+      lowercase_keyword:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: standard
+      lowercase_keyword_ngram_min_size1:
+        type: custom
+        filter:
+        - lowercase
+        - stop
+        - trim
+        - unique
+        tokenizer: nGram
+      lowercase_keyword_ngram_min_size2:
+        type: custom
+        filter:
+        - lowercase
+        - min2_length
+        - stop
+        - trim
+        - unique
+        tokenizer: nGram
+      lowercase_keyword_ngram_min_size3:
+        type: custom
+        filter:
+        - lowercase
+        - min3_length
+        - stop
+        - trim
+        - unique
+        tokenizer: ngram_1_to_3
+      lowercase_keyword_ngram:
+        type: custom
+        filter:
+        - lowercase
+        - stop
+        - trim
+        - unique
+        tokenizer: ngram_1_to_3
+      lowercase_keyword_without_standard:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: keyword
+      lowercase_whitespace:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: whitespace
+      ik:
+        alias:
+        - ik_analyzer
+        type: ik
+      ik_max_word:
+        type: ik
+        use_smart: false
+      ik_smart:
+        type: ik
+        use_smart: true
+      mmseg:
+        alias:
+        - mmseg_analyzer
+        type: mmseg
+      mmseg_maxword:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: mmseg_maxword
+      mmseg_complex:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: mmseg_complex
+      mmseg_simple:
+        type: custom
+        filter:
+        - lowercase
+        tokenizer: mmseg_simple
+      comma_spliter:
+        type: pattern
+        pattern: "[,|\\s]+"
+      pct_spliter:
+        type: pattern
+        pattern: "[%]+"
+      custom_snowball_analyzer:
+        type: snowball
+        language: English
+      simple_english_analyzer:
+        type: custom
+        tokenizer: whitespace
+        filter:
+        - standard
+        - lowercase
+        - snowball
+      edge_ngram:
+        type: custom
+        tokenizer: edgeNGram
+        filter:
+        - lowercase
+      pinyin_ngram_analyzer:
+        type: custom
+        tokenizer: my_pinyin
+        filter:
+        - lowercase
+        - nGram
+        - trim
+        - unique
+      pinyin_first_letter_analyzer:
+        type: custom
+        tokenizer: pinyin_first_letter
+        filter:
+        - standard
+        - lowercase
+      pinyin_first_letter_keyword_analyzer:
+        alias:
+        - pinyin_first_letter_analyzer_keyword
+        type: custom
+        tokenizer: keyword
+        filter:
+        - pinyin_first_letter
+        - lowercase
+      path_analyzer: #used for tokenize :/something/something/else
+        type: custom
+        tokenizer: path_hierarchy
+
+# index.analysis.analyzer.default.type: mmseg
+# 默认配置只支持类型 ik
+index.analysis.analyzer.default.type: ik
+# index.analysis.analyzer.default.type: keyword
+
+# rtf.filter.redis.host: 127.0.0.1
+# rtf.filter.redis.port: 6379
+
+# elasticsearch http user auth
+elasticfence.disabled: false
+elasticfence.root.password: password

@@ -88,7 +88,7 @@ node.data: true
 # network.publish_host: 192.168.0.1
 
 # 同时设置bind_host和publish_host上面两个参数
-# network.host: 0.0.0.0
+network.host: 0.0.0.0
 #
 # 设置节点间交互的tcp端口,默认是9300 
 # transport.tcp.port: 9300 
